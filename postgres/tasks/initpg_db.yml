@@ -1,0 +1,15 @@
+---
+- name: Check if PostgreSQL database is initialized.
+  stat:
+    path: "{{ psql_data_dir }}"
+  register: pgdata_dir_version
+  tags: check-initpostgres,install-postgresdb
+
+- debug:
+    var: pgdata_dir_version 
+
+- name: Initiate database
+  command: "/usr/pgsql-{{postgresql_version}}/bin/postgresql-{{postgresql_version}}-setup initdb"
+  #when: pgdata_dir_version.stat.exists == false
+  ignore_errors: true
+  tags: init-postgresdb,check-initpostgres

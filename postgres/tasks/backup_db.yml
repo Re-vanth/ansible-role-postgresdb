@@ -1,0 +1,11 @@
+---
+
+- name: ip of main host
+  debug:
+    var: hostvars[main_host].ansible_eth1.ipv4.address
+  register: ip_main_host
+  tags: ip_main_host
+
+- name: create a backup of the database
+  shell: "PGPASSWORD='{{ database_passwd }}' pg_dump -U '{{ database_user }}' -h '{{ hostvars[main_host].ansible_eth1.ipv4.address }}' -p 5432 -d '{{ database_name }}' > '{{ path_backup_file }}'"
+  become: true

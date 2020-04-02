@@ -1,0 +1,14 @@
+[run_pg] # contains hostid/hostname of main-node and recovery-node 
+
+
+slave01.itversity.com ansible_user=admin
+slave02.itversity.com ansible_user=admin
+
+[main_host] # main node
+
+slave01.itversity.com ansible_user=admin
+
+
+[recovery_host] # recovery node
+
+slave02.itversity.com ansible_user=admin

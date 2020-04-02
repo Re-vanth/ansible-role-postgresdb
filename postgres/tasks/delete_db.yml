@@ -1,0 +1,28 @@
+---
+
+
+
+- name: turning on the autocommit so that our delete command can run in the transaction block
+  postgresql_query:
+    db: "{{ database_name }}"
+    query: VACUUM
+    autocommit: yes
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  tags: delete-db
+
+- name: delete the created table in the rman database
+  postgresql_query:                                                           
+   db: "{{ database_name }}"                                                                  
+   query: DROP TABLE role1;                    
+   login_user: "{{ database_user }}"                                                          
+   login_password: "{{ database_passwd }}"                                           
+   login_host: "{{ login_host_url }}"                                         
+  become_user: "{{ postgres_user }}"                                                                                  
+  tags: delete-db
+  register: deletedb
+
+- debug:
+    var: deletedb                                                           

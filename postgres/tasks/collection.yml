@@ -1,0 +1,78 @@
+---
+- name: Create test_table in the "{{ database_name }}" database
+  postgresql_table:
+    db: "{{ database_name }}"
+    name: "{{ table_name }}"
+    columns:
+      - id serial primary key
+      - city VARCHAR (255) UNIQUE NOT NULL 
+    owner: rman
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  register: create
+  tags: testtable-in-rmandb,insert-query 
+
+- debug:
+    var: create
+
+
+- name: check if lines exist already in the created role1 table in rman database                   
+  postgresql_query:                                                                                
+    db: "{{ database_name }}"                                                                                       
+    query: select * from "{{ table_name }}";                                                                    
+    login_user: "{{ database_user }}"                                                                               
+    login_password: "{{ database_passwd }}"                                                                
+    login_host: "{{ login_host_url }}"                                                              
+  become_user: "{{ postgres_user }}"                                                                            
+  register: testtable                                                                              
+
+- debug:
+    var: testtable                                                                                                  
+                                                                                                   
+- name: Insert query to test_table in rman db                                                      
+  postgresql_query:                                                                                
+    db: "{{ database_name }}"                                                                                       
+    query: INSERT INTO "{{ table_name }}" (id,city) VALUES (4,'chennai');                                       
+    login_user: "{{ database_user }}"                                                                               
+    login_password: "{{ database_passwd }}"                                                                
+    login_host: "{{ login_host_url }}"                                                             
+  become_user: "{{ postgres_user }}"                                                                            
+  register: insert                                                                                 
+  ignore_errors: yes                                                                               
+  #when: testtable.rowcount < 0                                                                         
+  tags: insert-query,select-query                                                                  
+                                                                                                   
+- debug:                                                                                           
+    var: insert                                                                                    
+
+- name: Select query to test_db with named_args
+  postgresql_query:
+    db: "{{ database_name }}"
+    query: SELECT * FROM "{{ table_name }}" WHERE id = %(id_val)s 
+    named_args:
+      id_val: 1
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  register: show
+  tags: select-query,display-testtable
+
+- debug:
+    var: show
+
+- name: show collection in database rman
+  postgresql_query:
+    db: "{{ database_name }}"
+    query: SELECT * FROM "{{ table_name }}";
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  register: showall
+  tags: display-testtable
+
+- debug: 
+    var: showall

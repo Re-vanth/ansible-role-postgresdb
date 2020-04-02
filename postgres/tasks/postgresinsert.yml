@@ -1,0 +1,48 @@
+---
+
+- name: check if lines exist already in the created "{{ table_name }}" table in "{{ database_name }}" database
+  postgresql_query: 
+    db: "{{ database_name }}"
+    query: select * from "{{ table_name }}";
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  register: testtable
+  tags: test-pgtable
+
+- debug:
+    var: testtable
+  tags: test-pgtable
+
+- name: Insert query to test_table in rman db
+  postgresql_query:
+    db: "{{ database_name }}"
+    query: INSERT INTO "{{ table_name }}" (id,city) VALUES (1,'Hyderabad');
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  register: insert1
+  ignore_errors: yes
+  #when: testtable is failed
+  tags: insert-query1,insert-query
+
+- debug:
+    var: insert1
+
+- name: Insert query to test_table in rman db
+  postgresql_query:
+    db: "{{ database_name }}"
+    query: INSERT INTO "{{ table_name }}" (id,city) VALUES (2,'Secunderabad');
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_passwd }}"
+    login_host: "{{ login_host_url }}"
+  become_user: "{{ postgres_user }}"
+  register: insert2
+  ignore_errors: yes
+  #when: testtable is failed
+  tags: insert-query2,insert-query
+
+- debug:
+    var: insert2

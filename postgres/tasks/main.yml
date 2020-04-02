@@ -1,0 +1,36 @@
+---
+- import_tasks: addpg_repo.yml
+  when: inventory_hostname in groups['run_pg'] 
+  tags: add-pg-repo,install-postgresdb
+- import_tasks: install_psql.yml
+  when: inventory_hostname in groups['run_pg']
+  tags: install-postgresdb
+- import_tasks: initpg_db.yml
+  when: inventory_hostname in groups['run_pg']
+  tags: initpg-db
+- import_tasks: backup_config.yml
+  when: inventory_hostname in groups['run_pg']
+  tags: backup-config-playbook
+- import_tasks: setting_config.yml
+  when: inventory_hostname in groups['run_pg']    
+  tags: setting-config-playbook 
+
+    
+- import_tasks: create_db.yml
+  when: inventory_hostname in groups['main_host']
+  tags: create-db-playbook
+- import_tasks: collection.yml
+  when: inventory_hostname in groups['main_host']
+  tags: dml-queries-playbook
+- import_tasks: postgresinsert.yml
+  when: inventory_hostname in groups['main_host']
+  tags: postgres-insert
+
+
+
+- import_tasks: backup_db.yml
+  when: inventory_hostname in groups['recovery_host']
+  tags: backup_db
+- import_tasks: recover_db.yml
+  when: inventory_hostname in groups['recovery_host']
+  tags: recover_db

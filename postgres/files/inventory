@@ -1,0 +1,18 @@
+[run_pg] #contains hostid/hostname of main-node and recovery-node 
+
+<host-ip/host-name> ansible_user=admin
+<host-ip/host-name> ansible_user=admin
+
+
+[backup_host]
+
+<host-ip/host-name> ansible_user=admin
+
+[main_host]
+
+<host-ip/host-name> ansible_user=admin
+
+[recovery_host]
+
+<host-ip/host-name> ansible_user=admin
+

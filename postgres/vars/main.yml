@@ -1,0 +1,91 @@
+---
+# vars file for pgsql
+
+
+postgresql_version: "12"
+psql_data_dir: /var/lib/pgsql/{{postgresql_version}}/data/
+
+
+
+databases:
+  rman:
+    name: 'rman'
+    user: 'rman'
+    pass: 'RMANDB_PASSWORD'
+
+# postgres repo url
+
+postgres_repo_url: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm 
+
+
+# login_host url for the collections.yml, delete_db.yml, postgresinsert.yml
+
+login_host_url: "{{ hostvars[groups['main_host'][0]]['inventory_hostname'] }}"
+
+# backup host url
+
+backup_host: "{{ hostvars[groups['backup_host'][0]]['inventory_hostname'] }}"
+
+
+# all hosts group
+
+all-hosts: "{{ hostvars[groups['run_pg']]['inventory_hostname'] }}" 
+
+# main host group
+
+main-host: "{{ hostvars[groups['main_host'][0]]['inventory_hostname'] }}"
+
+main_host: "{{ hostvars[groups['main_host'][0]]['inventory_hostname'] }}"
+
+# recover host group
+
+recover-host: "{{ hostvars[groups['recovery_host'][0]]['inventory_hostname'] }}"
+
+
+
+# username for the postgres database on remote machines
+
+postgres_user: 'postgres'
+
+
+#
+
+db_postgres_encoding: 'UTF-8'
+db_postgres_tablespace: 'pg_default'
+db_postgres_LC_COLLATE: "{{ item.lc_collate | default(omit) }}" 
+db_postgres_LC_CTYPE: "{{ item.lc_ctype | default(omit) }}"
+db_postgres_CONNECTION_LIMIT: '-1'
+item.value.user: admin 
+item.value.pass: admin
+
+# location of the backup file
+
+path_backup_file: '/tmp/{{ database_name }}_backup.sql'
+
+# Database login details 
+
+database_user: 'rman'
+database_passwd: 'RMANDB_PASSWORD'
+
+# name of the database
+
+database_name: 'rman'
+
+table_name: 'citylist'
+
+# details of the backedup database in recovery node
+
+backup_db_name: '{{ database_name }}_backup'
+
+backup_databases1:
+  rman:
+    name: '{{ backup_db_name }}'
+    user: '{{ backup_db_name }}'
+    pass: '{{ backup_db_name }}_password'
+
+# Database login details
+
+backup_database_user: '{{ backup_db_name }}'
+backup_database_password: '{{ backup_db_name }}_password'
+
+backup_login_host_url: "{{ hostvars[groups['recovery_host'][0]]['inventory_hostname'] }}"

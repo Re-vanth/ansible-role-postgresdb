@@ -1,0 +1,10 @@
+---
+
+- name: running the postgres role
+  hosts:                            # name of the host/host group
+  tasks: 
+    - import_role: 
+        name: postgres
+
+
+        

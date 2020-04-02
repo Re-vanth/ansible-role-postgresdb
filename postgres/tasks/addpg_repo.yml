@@ -1,0 +1,8 @@
+---
+
+
+- name: adding postgresql repo file
+  yum : 
+    name: "{{ postgres_repo_url }}"
+    state: present
+  #tags: add-pg-repo,install-postgresdb

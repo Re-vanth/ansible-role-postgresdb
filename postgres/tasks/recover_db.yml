@@ -1,0 +1,50 @@
+---
+
+- name: Create postrgres db user, set password and grant privs
+  postgresql_user:
+    name={{ item.value.user }}
+    password={{ item.value.pass }}
+    role_attr_flags=CREATEDB,NOSUPERUSER,INHERIT,NOCREATEROLE
+    login_user=postgres
+  with_dict: "{{ backup_databases1 }}"
+  become: true
+  become_user: "{{ postgres_user }}"
+  tags: create-postgresdb-user
+
+- name: create a new database in the recovery node to view the backup database     
+  postgresql_db:                                                                   
+    name={{ item.value.name }}                                                     
+    encoding={{ db_postgres_encoding }}                                            
+    lc_collate={{ db_postgres_LC_COLLATE }}                                        
+    lc_ctype={{ db_postgres_LC_CTYPE }}                                            
+    owner={{ item.value.user }}                                                    
+    state=present                                                                  
+  with_dict: "{{ backup_databases1 }}"                                             
+  become: true                                                                     
+  become_user: "{{ postgres_user }}"                                               
+  register: check_dbbackup                                                         
+  tags: create_backupdb                                                            
+                                                                                   
+- debug:                                                                           
+    var: check_dbbackup                                                            
+
+- name: database restore
+  shell: "PGPASSWORD={{ backup_database_password }} psql -h localhost -U {{ backup_database_user }} -w -d {{ backup_db_name }} -f {{ path_backup_file }}"  
+  #become: true
+  #become_user: "{{ backup_database_user }}"
+  register: database_restore
+  tags: databaserestore
+  
+
+- debug:
+    var: database_restore
+
+- name: show collection in database rman
+  postgresql_query:
+    db: "{{ backup_db_name }}"
+    query: SELECT * FROM "{{ table_name }}";
+  become_user: "{{ postgres_user }}"
+  register: show_db_backup
+
+- debug: 
+    var: show_db_backup

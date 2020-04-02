@@ -1,0 +1,8 @@
+---
+
+
+- name: install postgres
+  hosts: all 
+  tasks:
+    - import_role:
+        name: postgres
